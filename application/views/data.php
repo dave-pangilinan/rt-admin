@@ -30,7 +30,7 @@ function formatJson($data) {
 	return $json;
 }
 
-if ($data) {
+if (isset($data) && $data) {
 	echo formatJson($data);
 } else {
 	echo 'empty';

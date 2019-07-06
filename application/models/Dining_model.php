@@ -24,6 +24,16 @@ class Dining_model extends CI_Model {
         return $query->result_array();
     }
 
+    public function get_avg_rating($id) {
+        $this->db->select('AVG(rating) AS avg_rating');
+        $this->db->from('dining_ratings');
+        $this->db->where('din_id', $id);
+        $query = $this->db->get();
+        $result = $query->row()->avg_rating;
+
+        return $result ? $result : 0;
+    }
+
     public function get_islands() {
         $this->db->select('island');
         $this->db->from('dining');
@@ -55,6 +65,9 @@ class Dining_model extends CI_Model {
 
                 $temp[$key] = $dining_per_island;
                 $temp[$key]['content'] = htmlentities($dining_per_island['content']);
+
+                // Get the rating.
+                $temp[$key]['rating'] = $this->get_avg_rating($dining_per_island['din_id']);
 
                 // For each dining, get the tags.
                 $tags = $this->get_dining_tags($dining_per_island['din_id']);

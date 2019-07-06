@@ -24,6 +24,16 @@ class Attractions_model extends CI_Model {
         return $query->result_array();
     }
 
+    public function get_avg_rating($id) {
+        $this->db->select('AVG(rating) AS avg_rating');
+        $this->db->from('attraction_ratings');
+        $this->db->where('att_id', $id);
+        $query = $this->db->get();
+        $result = $query->row()->avg_rating;
+
+        return $result ? $result : 0;
+    }
+
     public function get_islands() {
         $this->db->select('island');
         $this->db->from('attractions');
@@ -55,6 +65,9 @@ class Attractions_model extends CI_Model {
 
                 $temp[$key] = $attraction_per_island;
                 $temp[$key]['content'] = htmlentities($attraction_per_island['content']);
+
+                // Get the rating.
+                $temp[$key]['rating'] = $this->get_avg_rating($attraction_per_island['att_id']);
 
                 // For each attraction, get the tags.
                 $tags = $this->get_attraction_tags($attraction_per_island['att_id']);

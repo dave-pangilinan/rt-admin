@@ -24,6 +24,16 @@ class Accommodations_model extends CI_Model {
         return $query->result_array();
     }
 
+    public function get_avg_rating($id) {
+        $this->db->select('AVG(rating) AS avg_rating');
+        $this->db->from('accommodation_ratings');
+        $this->db->where('acc_id', $id);
+        $query = $this->db->get();
+        $result = $query->row()->avg_rating;
+
+        return $result ? $result : 0;
+    }
+
     public function get_islands() {
         $this->db->select('island');
         $this->db->from('accommodations');
@@ -56,6 +66,9 @@ class Accommodations_model extends CI_Model {
                 // Clean up html content.
                 $temp[$key] = $accommodation_per_island;
                 $temp[$key]['content'] = htmlentities($accommodation_per_island['content']);
+
+                // Get the rating.
+                $temp[$key]['rating'] = $this->get_avg_rating($accommodation_per_island['acc_id']);
 
                 // For each accommodation, get the tags.
                 $tags = $this->get_accommodation_tags($accommodation_per_island['acc_id']);
